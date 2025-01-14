@@ -2,7 +2,6 @@ from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 import os
 import fitz  # PyMuPDF
 
-
 translations = {
     "en": {
         "merge_pdfs": "Enter the PDF file names to merge (comma-separated): ",
@@ -59,7 +58,7 @@ translations = {
         "remove_metadata_from_pdf": "11. Remove metadata from PDF",
         "rearrange_pdf_pages": "12. Rearrange PDF pages",
         "extract_specific_pages": "13. Extract specific pages from PDF",
-        "exit": "15. Exit",
+        "exit": "16. Exit",
         "enter_function_number": "Enter the function number: ",
         "invalid_choice": "Invalid choice. Please try again.",
         "goodbye": "Goodbye!"
@@ -119,7 +118,7 @@ translations = {
         "remove_metadata_from_pdf": "11. Supprimer les métadonnées d'un PDF",
         "rearrange_pdf_pages": "12. Réorganiser les pages d'un PDF",
         "extract_specific_pages": "13. Extraire des pages spécifiques d'un PDF",
-        "exit": "15. Quitter",
+        "exit": "16. Quitter",
         "enter_function_number": "Entrez le numéro de la fonction : ",
         "invalid_choice": "Choix invalide. Veuillez réessayer.",
         "goodbye": "Au revoir !"
@@ -179,7 +178,7 @@ translations = {
         "remove_metadata_from_pdf": "11. إزالة البيانات الوصفية من PDF",
          "rearrange_pdf_pages": "12. إعادة ترتيب صفحات PDF",
         "extract_specific_pages": "13. استخراج صفحات محددة من PDF",
-        "exit": "15. خروج",
+        "exit": "16. خروج",
         "enter_function_number": "أدخل رقم الوظيفة: ",
         "invalid_choice": "اختيار غير صحيح. حاول مرة أخرى.",
          "goodbye": "وداعًا!"
@@ -473,6 +472,7 @@ def main():
         print(get_translation(lang, "rearrange_pdf_pages"))
         print(get_translation(lang, "extract_specific_pages"))
         print("14. View metadata")
+        print("15. View Simalrity")
         print(get_translation(lang, "exit"))
         choice = input(get_translation(lang, "enter_function_number"))
 
@@ -504,8 +504,10 @@ def main():
             extract_pages(lang)
         elif choice == "14":
             view_metadata(lang)
-
         elif choice == "15":
+            import similarity_project.app as app
+            app.print_results()
+        elif choice == "16":
             print(get_translation(lang, "goodbye"))
             break
 
