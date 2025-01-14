@@ -17,6 +17,7 @@ wordnet.ensure_loaded()  # Ensure wordnet is loaded properly
 from difflib import SequenceMatcher
 from pyjarowinkler import distance as jaro_winkler_distance
 from scipy.spatial.distance import hamming, jaccard, cosine, euclidean, cityblock, chebyshev, canberra, braycurtis, minkowski, correlation, mahalanobis
+import time
 
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -190,6 +191,7 @@ def print_results():
     if not documents:
         raise ValueError("No documents found in the specified directory.")
 
+
     vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1, 2))
     similarities, distances = compute_similarities_and_distances(documents, user_input, vectorizer)
 
@@ -197,6 +199,14 @@ def print_results():
         print("No similarities found.")
         return
     print("-" * 40)
+    print("The documents have been successfully loaded.")
+    time.sleep(3)  
+    print("The documents are being loaded from the directory. Please wait...")
+    time.sleep(3) 
+    print("The test document is being loaded. Please wait...")
+    time.sleep(3) 
+    print("-" * 40)
+
     total_words = sum([len(result['document'].split()) for result in similarities])
     similarities = sorted(similarities, key=lambda x: x["combined_score"], reverse=True)
 
@@ -266,11 +276,11 @@ def print_results():
     index = np.arange(len(documents))
 
     sns.set_palette("colorblind")
-    plt.bar(index, cosine, bar_width, label="Cosine Similarity", alpha=0.7)
-    plt.bar(index + bar_width, jaccard, bar_width, label="Jaccard Similarity", alpha=0.5)
-    plt.bar(index + 2 * bar_width, levenshtein, bar_width, label="Levenshtein Similarity", alpha=0.3)
-    plt.bar(index + 3 * bar_width, jaro_winkler, bar_width, label="Jaro-Winkler Similarity", alpha=0.3)
-    plt.bar(index + 4 * bar_width, combined, bar_width, label="Combined Score", alpha=0.3)
+    plt.bar(index, cosine, bar_width, label="Content Vector Similarity", alpha=0.7)
+    plt.bar(index + bar_width, jaccard, bar_width, label="Overlap-Based Similarity", alpha=0.5)
+    plt.bar(index + 2 * bar_width, levenshtein, bar_width, label="Text Edit Similarity", alpha=0.3)
+    plt.bar(index + 3 * bar_width, jaro_winkler, bar_width, label="String Proximity Similarity", alpha=0.3)
+    plt.bar(index + 4 * bar_width, combined, bar_width, label="Overall Similarity Score", alpha=0.3)
 
     plt.xlabel('Compared Documents')
     plt.ylabel('Similarity Score (0-1)')
@@ -294,4 +304,11 @@ comparison_directory = "C:/Users/asdal/Downloads/pdf/similarity_project/pdf_dire
 
 
 # Display the results
-print_results()
+
+
+def main():
+    print_results()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,6 +1,19 @@
-from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+import PyPDF2 # type: ignore
 import os
-import fitz  # PyMuPDF
+import fitz  # type: ignore
+import similarity_project.app as app
+import time
+from googletrans import Translator # type: ignore
+import pdfplumber # type: ignore
+from docx import Document # type: ignore
+from pptx import Presentation # type: ignore
+import pandas as pd
+from reportlab.pdfgen import canvas # type: ignore
+from reportlab.lib.pagesizes import letter # type: ignore
+from io import BytesIO
+from PIL import Image
+
+
 
 translations = {
     "en": {
@@ -58,7 +71,7 @@ translations = {
         "remove_metadata_from_pdf": "11. Remove metadata from PDF",
         "rearrange_pdf_pages": "12. Rearrange PDF pages",
         "extract_specific_pages": "13. Extract specific pages from PDF",
-        "exit": "16. Exit",
+        "exit": "23. Exit",
         "enter_function_number": "Enter the function number: ",
         "invalid_choice": "Invalid choice. Please try again.",
         "goodbye": "Goodbye!"
@@ -118,7 +131,7 @@ translations = {
         "remove_metadata_from_pdf": "11. Supprimer les métadonnées d'un PDF",
         "rearrange_pdf_pages": "12. Réorganiser les pages d'un PDF",
         "extract_specific_pages": "13. Extraire des pages spécifiques d'un PDF",
-        "exit": "16. Quitter",
+        "exit": "23. Quitter",
         "enter_function_number": "Entrez le numéro de la fonction : ",
         "invalid_choice": "Choix invalide. Veuillez réessayer.",
         "goodbye": "Au revoir !"
@@ -178,7 +191,7 @@ translations = {
         "remove_metadata_from_pdf": "11. إزالة البيانات الوصفية من PDF",
          "rearrange_pdf_pages": "12. إعادة ترتيب صفحات PDF",
         "extract_specific_pages": "13. استخراج صفحات محددة من PDF",
-        "exit": "16. خروج",
+        "exit": "23. خروج",
         "enter_function_number": "أدخل رقم الوظيفة: ",
         "invalid_choice": "اختيار غير صحيح. حاول مرة أخرى.",
          "goodbye": "وداعًا!"
@@ -450,13 +463,263 @@ def extract_pages(lang):
     except Exception as e:
         print(get_translation(lang, "error_occurred") + str(e))
 
+
+def pdf_doce():
+    print("Converting PDF to Word document")
+    try:
+        # Create a Word document object
+        doc = Document()
+
+        # Open the PDF using pdfplumber
+        with pdfplumber.open("1.pdf") as pdf:
+            # Iterate through each page of the PDF
+            for page_num, page in enumerate(pdf.pages):
+                text = page.extract_text()
+
+                if text:  # Ensure there is text on the page
+                    doc.add_heading(f'Page {page_num + 1}', level=1)
+                    # Add the extracted text as a paragraph
+                    doc.add_paragraph(text)
+
+        # Save the Word document
+        doc.save("output.docx")
+        print(f"PDF successfully converted to Word document at output.docx")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def pdf_excel():
+    print("Converting PDF to Excel")
+    try:
+        # Open the PDF file using pdfplumber
+        with pdfplumber.open("1.pdf") as pdf:
+            all_tables = []
+            # Iterate through all the pages of the PDF
+            for page in pdf.pages:
+                # Extract tables from the page
+                tables = page.extract_tables()
+                for table in tables:
+                    df = pd.DataFrame(table[1:], columns=table[0])  # Convert table to DataFrame
+                    all_tables.append(df)
+            
+            # Concatenate all tables into a single DataFrame (if multiple tables exist)
+            full_data = pd.concat(all_tables, ignore_index=True)
+
+            # Save the data to an Excel file
+            full_data.to_excel("output.xlsx", index=False, engine='openpyxl')
+            print(f"PDF data successfully saved to output_presentation.pptx")
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def pdf_html():
+    print("Converting PDF to HTML")
+    try:
+        # Open the PDF using pdfplumber
+        with pdfplumber.open("1.pdf") as pdf:
+            html_content = "<html><body>"
+            
+            # Iterate through each page of the PDF
+            for page_num, page in enumerate(pdf.pages):
+                # Extract text from the page
+                text = page.extract_text()
+                
+                if text:  # If the page has text
+                    # Add a header for each page
+                    html_content += f"<h2>Page {page_num + 1}</h2>"
+                    # Convert the extracted text into paragraphs
+                    paragraphs = text.split('\n')
+                    for para in paragraphs:
+                        html_content += f"<p>{para}</p>"
+            
+            # Closing HTML tags
+            html_content += "</body></html>"
+            
+            # Save the HTML content to a file
+            with open("output.html", 'w', encoding='utf-8') as file:
+                file.write(html_content)
+            print(f"PDF successfully converted to HTML at output.html")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def pdf_ppt():
+    print("Converting PDF to PowerPoint")
+    try:
+        # Create a PowerPoint presentation object
+        prs = Presentation()
+
+        # Open the PDF using pdfplumber
+        with pdfplumber.open("1.pdf") as pdf:
+            # Iterate through each page of the PDF
+            for page_num, page in enumerate(pdf.pages):
+                # Extract text from the page
+                text = page.extract_text()
+
+                if text:  # Ensure there is text on the page
+                    # Add a slide to the presentation for each page of the PDF
+                    slide_layout = prs.slide_layouts[1]  # Use a title and content layout
+                    slide = prs.slides.add_slide(slide_layout)
+                    title = slide.shapes.title
+                    content = slide.shapes.placeholders[1]
+
+                    # Set the title to the page number and content to the extracted text
+                    title.text = f"Page {page_num + 1}"
+                    content.text = text
+
+        # Save the PowerPoint presentation
+        prs.save("output_presentation.pptx")
+        print("PDF successfully converted to PowerPoint at output_presentation.pptx")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def extract_text_from_pdf(pdf_path):
+    try:
+        with open(pdf_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text()
+            return text
+    except Exception as e:
+        return f"An error occurred while extracting text: {e}"
+
+def translate_text(text, target_language='ar'):
+    try:
+        translator = Translator()
+        translated = translator.translate(text, dest=target_language)
+        return translated.text
+    except Exception as e:
+        return f"An error occurred during translation: {e}"
+
+def save_text_to_file(text, filename='translated_text.txt'):
+    try:
+        with open(filename, 'w', encoding='utf-8') as file:
+            file.write(text)
+        print(f"Translated text saved to {filename}")
+    except Exception as e:
+        print(f"An error occurred while saving the file: {e}")
+
+def transalte():
+    print("Translating text from 1.pdf to Arabic")
+    pdf_path = '1.pdf'  # Replace with your PDF file path
+    target_lang = 'ar'  # For Arabic translation
+
+    extracted_text = extract_text_from_pdf(pdf_path)
+    print(extracted_text)
+    if "An error occurred" not in extracted_text:
+        translated_text = translate_text(extracted_text, target_lang)
+        save_text_to_file(translated_text)
+
+def clear_screen():
+    # يعمل على Windows
+    time.sleep(1.5)  
+    os.system('cls')
+
+
+
+def add_page_numbers():
+    print("Adding page numbers to the 1.pdf file from the server!")
+    try:
+        # Open the original PDF
+        with open("1.pdf", 'rb') as original_pdf:
+            reader = PyPDF2.PdfReader(original_pdf) # type: ignore
+            writer = PyPDF2.PdfWriter()
+
+            # Create a temporary PDF to store the page numbers
+            packet = BytesIO()
+            for page_num in range(len(reader.pages)):
+                # Create a canvas for each page
+                c = canvas.Canvas(packet)
+                c.drawString(500, 10, f"Page {page_num + 1}")  # Position the page number at the bottom right
+                c.save()
+
+                # Go back to the beginning of the BytesIO buffer
+                packet.seek(0)
+
+                # Create a new PDF with the page number
+                page_number_pdf = PyPDF2.PdfReader(packet)
+                page = reader.pages[page_num]
+                page_number = page_number_pdf.pages[0]
+
+                # Merge the page with the page number
+                page.merge_page(page_number)
+
+                # Add the merged page to the writer
+                writer.add_page(page)
+
+            # Write the output to a new PDF file
+            with open("output.pdf", 'wb') as output_pdf:
+                writer.write(output_pdf)
+
+            print(f"Page numbers added successfully! The new PDF is saved as output.pdf")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+
+def signture():
+    print("Adding signature as 1.png to the 1.pdf file from the server!")
+    x_position = 450  # X-coordinate for the signature
+    y_position = 30   # Y-coordinate for the signature
+
+    try:
+        # Open the original PDF
+        with open("1.pdf", 'rb') as original_pdf:
+            reader = PyPDF2.PdfReader(original_pdf)
+            writer = PyPDF2.PdfWriter()
+
+            # Load the signature image
+            signature_image = "1.png"
+
+            for page_num, page in enumerate(reader.pages):
+                # Create a BytesIO buffer for the overlay
+                packet = BytesIO()
+                c = canvas.Canvas(packet, pagesize=letter)
+
+                # Draw the signature image
+                c.drawImage(signature_image, x_position, y_position, width=100, height=50)
+                c.save()
+
+                # Move to the beginning of the BytesIO buffer
+                packet.seek(0)
+
+                # Create a new PDF with the signature overlay
+                overlay_pdf = PyPDF2.PdfReader(packet)
+                overlay_page = overlay_pdf.pages[0]
+
+                # Merge the overlay with the current page
+                page.merge_page(overlay_page)
+
+                # Add the merged page to the writer
+                writer.add_page(page)
+
+            # Write the output to a new PDF file
+            with open("output.pdf", 'wb') as output_pdf:
+                writer.write(output_pdf)
+
+            print("Signature added successfully! The new PDF is saved as 'output.pdf'.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
 def main():
+    clear_screen()
+    print("Welcome to the PDF Manipulation and Similarity Script CLI!")
     lang = input("Choose language (en/fr/ar): ").strip().lower()
     if lang not in translations:
         print("Invalid language choice. Defaulting to English.")
         lang = "en"
 
     while True:
+        clear_screen()
         print(get_translation(lang, "function_menu"))
         print(get_translation(lang, "merge_files"))
         print(get_translation(lang, "split_file"))
@@ -473,42 +736,108 @@ def main():
         print(get_translation(lang, "extract_specific_pages"))
         print("14. View metadata")
         print("15. View Simalrity")
+        print("16. PDF to EXCEL")
+        print("17. PDF to DOC")
+        print("18. PDF to PPT")
+        print("19. PDF to HTML")
+        print("20. Add page numbers")
+        print("21. Signture")
+        print("22. Translate to arabic")
         print(get_translation(lang, "exit"))
         choice = input(get_translation(lang, "enter_function_number"))
-
+        
         if choice == "1":
+            clear_screen()
             merge_pdfs(lang)
+
         elif choice == "2":
+            clear_screen()
             split_pdf(lang)
+
         elif choice == "3":
+            clear_screen()
             extract_text(lang)
+
         elif choice == "4":
+            clear_screen()
             encrypt_pdf(lang)
+
         elif choice == "5":
+            clear_screen()
             decrypt_pdf(lang)
+
         elif choice == "6":
+            clear_screen()
             rotate_pdf(lang)
+
         elif choice == "7":
+            clear_screen()
             add_watermark(lang)
+
         elif choice == "8":
+             clear_screen()
              compress_pdf(lang)
+
         elif choice == "9":
+            clear_screen()
             extract_images(lang)
+
         elif choice == "10":
+            clear_screen()
             add_metadata(lang)
+
         elif choice == "11":
+            clear_screen()
             remove_metadata(lang)
+
         elif choice == "12":
+            clear_screen()
             rearrange_pages(lang)
+
         elif choice == "13":
+            clear_screen()
             extract_pages(lang)
+
         elif choice == "14":
+            clear_screen()
             view_metadata(lang)
+
         elif choice == "15":
-            import similarity_project.app as app
-            app.print_results()
+            clear_screen()
+            app.main()
+
         elif choice == "16":
+            clear_screen()
+            pdf_excel()
+
+        elif choice == "17":
+            clear_screen()
+            pdf_doce()
+
+        elif choice == "18":
+            clear_screen()
+            pdf_ppt()
+
+        elif choice == "19":
+            clear_screen()
+            pdf_html()
+
+        elif choice == "20":
+            clear_screen()
+            add_page_numbers()
+
+        elif choice == "21":
+            clear_screen()
+            signture()
+
+        elif choice == "22":
+            clear_screen()
+            transalte()
+
+        elif choice == "23":
+            clear_screen()
             print(get_translation(lang, "goodbye"))
+            clear_screen()
             break
 
         else:

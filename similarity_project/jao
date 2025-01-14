@@ -1,9 +1,9 @@
-cd C:\Users\asdal\Downloads\similarity_project
+cd C:\Users\asdal\Downloads\pdf
 
-"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m  pip install PyMuPDF
-"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m pip install nltk bs4 PyPDF2 scikit-learn matplotlib seaborn
+"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m  pip install googletrans==4.0.0-rc1
 
-"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m nltk.downloader stopwords wordnet omw-1.4
+"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m  pip install -r requirments.txt
 
 "C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe" main.py
+
 "C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe" app.py
