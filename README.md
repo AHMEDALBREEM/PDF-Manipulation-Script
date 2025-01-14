@@ -1,46 +1,65 @@
-# PDF Manipulation Script
+# PDF Manipulation and Similarity Script
 
-This script provides various functionalities for manipulating PDF files using Python. It allows users to perform operations such as merging, splitting, extracting text, encrypting, decrypting, rotating, adding watermarks, compressing, extracting images, adding/removing metadata, rearranging pages, and extracting specific pages.
+## Description
+This project provides a command-line interface (CLI) for manipulating PDF files and analyzing document similarity. It includes functionalities such as merging, splitting, extracting text, encrypting, decrypting, rotating, adding watermarks, compressing, and managing metadata of PDF files. Additionally, it supports text similarity analysis between documents using various metrics.
 
-## Functionalities
+## Features
+- **PDF Manipulation**:
+  - Merge multiple PDF files into one.
+  - Split a PDF file into individual pages.
+  - Extract text from a PDF file.
+  - Encrypt and decrypt PDF files with a password.
+  - Rotate pages in a PDF file.
+  - Add watermarks to PDF files.
+  - Compress PDF files to reduce file size.
+  - Add, view, and remove metadata from PDF files.
 
-1. **Merge PDF files**: Combine multiple PDF files into one.
-2. **Split PDF file**: Split a PDF file into specified page ranges.
-3. **Extract text from PDF**: Extract text content from a PDF file.
-4. **Encrypt PDF file**: Secure a PDF file with a password.
-5. **Decrypt PDF file**: Remove encryption from a PDF file using the correct password.
-6. **Rotate PDF pages**: Rotate pages of a PDF file by a specified angle.
-7. **Add watermark to PDF**: Overlay a watermark on a PDF file.
-8. **Compress PDF file**: Reduce the size of a PDF file.
-9. **Extract images from PDF**: Extract images contained within a PDF file.
-10. **Add metadata to PDF**: Add title, author, and subject metadata to a PDF file.
-11. **Remove metadata from PDF**: Clear all metadata from a PDF file.
-12. **Rearrange PDF pages**: Change the order of pages in a PDF file.
-13. **Extract specific pages**: Extract selected pages from a PDF file.
-14. **View metadata**: Display metadata information of a PDF file.
+- **Document Similarity Analysis**:
+  - Compute cosine similarity, Jaccard similarity, Levenshtein similarity, and Jaro-Winkler similarity.
+  - Visualize similarity scores using bar charts.
+  - Load and compare documents from a specified directory.
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/pdf-manipulation-similarity.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd pdf-manipulation-similarity
+   ```
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
+### PDF Manipulation
+Run the main script to access the PDF manipulation functionalities:
+```bash
+python main.py
+```
+Follow the on-screen instructions to select the desired operation.
 
-1. Ensure you have Python installed on your system.
-2. Install the required dependencies:
-   ```bash
-   pip install PyPDF2 PyMuPDF
-   ```
-3. Run the script:
-   ```bash
-   python main.py
-   ```
-4. Follow the on-screen prompts to select the desired functionality.
+### Document Similarity Analysis
+Run the similarity analysis script to compare documents:
+```bash
+python similarity_project/app.py
+```
+The script will load documents from the specified directory and compare them against a test document, displaying the similarity scores and visualizations.
 
-## Dependencies
+## Languages Supported
+The application supports the following languages for user interaction:
+- English (en)
+- French (fr)
+- Arabic (ar)
 
-- PyPDF2
-- PyMuPDF
+## Contributing
+Contributions are welcome! Please follow these steps to contribute:
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Commit your changes and push to your branch.
+4. Submit a pull request with a detailed description of your changes.
 
-## Language Support
-
-The script supports multiple languages, including English, French, and Arabic.
-
-## Author
-
-AHMED M. S. ALBREEM
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
