@@ -13,6 +13,10 @@ This project provides a command-line interface (CLI) for manipulating PDF files 
   - Add watermarks to PDF files.
   - Compress PDF files to reduce file size.
   - Add, view, and remove metadata from PDF files.
+  - convert pdf to pptx and docx and xlsx and html
+  - transalte to arabic (otherwise you can select the language) as .txt
+  - add signature to pdf
+  - add page number tp pdf 
 
 - **Document Similarity Analysis**:
   - Compute cosine similarity, Jaccard similarity, Levenshtein similarity, and Jaro-Winkler similarity.
