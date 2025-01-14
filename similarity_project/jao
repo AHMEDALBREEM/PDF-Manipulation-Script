@@ -1,6 +1,6 @@
 cd C:\Users\asdal\Downloads\pdf
 
-"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m  pip install googletrans==4.0.0-rc1
+"C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m  pip install pdf2image
 
 "C:\Users\asdal\AppData\Local\Programs\Python\Python311\python.exe"  -m  pip install -r requirments.txt
 

@@ -13,6 +13,7 @@ from reportlab.lib.pagesizes import letter # type: ignore
 from io import BytesIO
 from PIL import Image
 
+from pdf2image import convert_from_path
 
 
 translations = {
@@ -71,7 +72,7 @@ translations = {
         "remove_metadata_from_pdf": "11. Remove metadata from PDF",
         "rearrange_pdf_pages": "12. Rearrange PDF pages",
         "extract_specific_pages": "13. Extract specific pages from PDF",
-        "exit": "23. Exit",
+        "exit": "24. Exit",
         "enter_function_number": "Enter the function number: ",
         "invalid_choice": "Invalid choice. Please try again.",
         "goodbye": "Goodbye!"
@@ -131,7 +132,7 @@ translations = {
         "remove_metadata_from_pdf": "11. Supprimer les métadonnées d'un PDF",
         "rearrange_pdf_pages": "12. Réorganiser les pages d'un PDF",
         "extract_specific_pages": "13. Extraire des pages spécifiques d'un PDF",
-        "exit": "23. Quitter",
+        "exit": "24. Quitter",
         "enter_function_number": "Entrez le numéro de la fonction : ",
         "invalid_choice": "Choix invalide. Veuillez réessayer.",
         "goodbye": "Au revoir !"
@@ -191,7 +192,7 @@ translations = {
         "remove_metadata_from_pdf": "11. إزالة البيانات الوصفية من PDF",
          "rearrange_pdf_pages": "12. إعادة ترتيب صفحات PDF",
         "extract_specific_pages": "13. استخراج صفحات محددة من PDF",
-        "exit": "23. خروج",
+        "exit": "24. خروج",
         "enter_function_number": "أدخل رقم الوظيفة: ",
         "invalid_choice": "اختيار غير صحيح. حاول مرة أخرى.",
          "goodbye": "وداعًا!"
@@ -662,6 +663,17 @@ def add_page_numbers():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def pdf_to_jpg():
+    pdf_path = "1.pdf"
+
+    # تحويل الصفحات إلى صور
+    images = convert_from_path(pdf_path, poppler_path=r'C:\poppler\Library\bin')
+
+
+    # حفظ كل صفحة كصورة JPG
+    for i, image in enumerate(images):
+        image.save(f'page_{i + 1}.jpg', 'JPEG')
+
 
 
 def signture():
@@ -743,6 +755,7 @@ def main():
         print("20. Add page numbers")
         print("21. Signture")
         print("22. Translate to arabic")
+        print("23. PDF TO JPG")
         print(get_translation(lang, "exit"))
         choice = input(get_translation(lang, "enter_function_number"))
         
@@ -835,6 +848,10 @@ def main():
             transalte()
 
         elif choice == "23":
+            clear_screen()
+            pdf_to_jpg()
+
+        elif choice == "24":
             clear_screen()
             print(get_translation(lang, "goodbye"))
             clear_screen()
